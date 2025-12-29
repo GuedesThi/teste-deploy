@@ -1,16 +1,13 @@
 import fastify, { FastifyRequest } from "fastify";
-import { listaMensagens, postMessageService } from "./services/post-message.ts";
+import { postMessageService } from "./services/post-message.ts";
 import "dotenv/config";
+import { getMessagesService } from "./services/get-message.ts";
 
 const app = fastify();
 
 export interface messageBodySchema {
   mensagem: string;
 }
-
-app.get("/", (request, reply) => {
-  reply.send("Bem-vindo ao o'Guedes API!!!");
-});
 
 app.get("/message", (request, reply) => {
   reply.send({
@@ -20,15 +17,25 @@ app.get("/message", (request, reply) => {
 
 app.post(
   "/message",
-  (request: FastifyRequest<{ Body: messageBodySchema }>, reply) => {
+  async (request: FastifyRequest<{ Body: messageBodySchema }>, reply) => {
     const { mensagem } = request.body;
-    postMessageService(mensagem);
-    reply.send("Mensagem enviado com sucesso");
+
+    if (!mensagem) {
+      return reply
+        .status(400)
+        .send({ error: "O campo 'mensagem' é obrigatório." });
+    }
+
+    const result = await postMessageService(mensagem);
+    return reply
+      .status(201)
+      .send({ message: "Mensagem enviada com sucesso", id: result.id });
   }
 );
 
-app.get("/my-message", (request, reply) => {
-  reply.send({ mensagemPersonalizada: listaMensagens });
+app.get("/my-message", async (request, reply) => {
+  const mensagens = await getMessagesService();
+  return reply.send({ mensagens });
 });
 
 const PORT = Number(process.env.PORT) || 3333;

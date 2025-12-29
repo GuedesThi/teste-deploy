@@ -4,20 +4,28 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx tsx watch src/server.ts",
-    "build": "tsup src --out-dir dist --format esm",
-    "start": "node dist/server.js"
+    "dev": "docker compose up -d && npx tsx watch src/server.ts",
+    "build": "npx prisma generate && tsup src --out-dir dist --format esm",
+    "test:prod": "docker compose up -d && npm run build && npm run start",
+    "start": "node dist/server.js",
+    "migrate:prod": "npx prisma migrate deploy",
+    "stop": "docker stop postgresql_db"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@prisma/adapter-pg": "^7.2.0",
+    "@prisma/client": "^7.2.0",
     "dotenv": "^17.2.3",
-    "fastify": "^5.6.2"
+    "fastify": "^5.6.2",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@types/node": "^25.0.3",
+    "@types/pg": "^8.16.0",
+    "prisma": "^7.2.0",
     "tsup": "^8.5.1",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"

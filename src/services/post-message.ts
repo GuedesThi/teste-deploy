@@ -1,5 +1,7 @@
-export const listaMensagens: string[] = [];
+import { prisma } from "../../lib/prisma.ts";
 
-export function postMessageService(data: string) {
-  listaMensagens.push(data);
+export async function postMessageService(data: string) {
+  return await prisma.message.create({
+    data: { content: data },
+  });
 }

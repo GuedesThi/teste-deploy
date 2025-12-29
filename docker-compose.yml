@@ -1,0 +1,16 @@
+services:
+  postgresql:
+    image: postgres:latest
+    container_name: postgresql_db
+    restart: always
+    environment:
+      POSTGRES_USER: oguedes
+      POSTGRES_PASSWORD: senha123
+      POSTGRES_DB: testedeploy_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+
+volumes:
+  pgdata:
